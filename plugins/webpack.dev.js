@@ -4,9 +4,9 @@ module.exports = (config) =>
   merge(
     /** @type {import('webpack').Configuration} */
     {
-      mode: 'development',
+      mode: 'production',
       target: 'web',
-      devtool: 'eval-source-map',
+      devtool: 'hidden-source-map',
       resolve: {
         extensions: ['.js', '.jsx', '.ts', '.tsx'],
       },

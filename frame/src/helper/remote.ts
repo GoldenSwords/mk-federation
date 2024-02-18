@@ -6,6 +6,68 @@ export interface ImportRemoteOptions {
   bustRemoteEntryCache?: boolean;
 }
 
+function loadSource(path: string, event: (e: Event) => void, scope: string): void {
+  window.__mkInProgress = window.__mkInProgress ?? {};
+  if (window.__mkInProgress[path]) {
+    window.__mkInProgress[path].push(event);
+  } else {
+    const dataWebpackPrefix = '@mk/frame:';
+
+    let loadScript: HTMLScriptElement | null = null;
+    if (void 0 !== scope) {
+      for (let g = document.getElementsByTagName('script'), i = 0; i < g.length; i++) {
+        const a = g[i];
+        if (a.getAttribute('src') == path || a.getAttribute('data-webpack') == dataWebpackPrefix + scope) {
+          loadScript = a;
+          break;
+        }
+      }
+    }
+
+    let loadTimer = -1;
+
+    const callback = (n: any) => {
+      if (!loadScript) {
+        clearTimeout(loadTimer);
+        return;
+      }
+
+      loadScript.onerror = loadScript.onload = null;
+
+      const I = window.__mkInProgress[path];
+
+      delete window.__mkInProgress[path];
+      loadScript.parentNode && loadScript.parentNode.removeChild(loadScript);
+      I && I.forEach((e) => e(n));
+    };
+
+    if (!loadScript) {
+      loadScript = document.createElement('script');
+      loadScript.charset = 'utf-8';
+      // @ts-ignore
+      loadScript.timeout = 120;
+      __webpack_require__.nc && loadScript.setAttribute('nonce', __webpack_require__.nc);
+      loadScript.setAttribute('data-webpack', dataWebpackPrefix + scope);
+      loadScript.src = path;
+      window.__mkInProgress[path] = [event];
+
+      loadScript.onerror = callback;
+      loadScript.onload = callback;
+      document.head.appendChild(loadScript);
+    } else {
+      console.log(1);
+    }
+
+    loadTimer = window.setTimeout(
+      callback.bind(null, {
+        type: 'timeout',
+        target: loadScript,
+      }),
+      12e4,
+    );
+  }
+}
+
 const loadRemote = (
   url: ImportRemoteOptions['url'],
   scope: ImportRemoteOptions['scope'],
@@ -13,14 +75,15 @@ const loadRemote = (
 ) =>
   new Promise<void>((resolve, reject) => {
     const timestamp = bustRemoteEntryCache ? `?t=${new Date().getTime()}` : '';
-    __webpack_require__.l(
+
+    loadSource(
       `${url}${timestamp}`,
-      (event: any) => {
+      (event: Event) => {
         if (event?.type === 'load') {
           // Script loaded successfully:
           return resolve();
         }
-        const realSrc = event?.target?.src;
+        const realSrc = (event?.target as HTMLScriptElement)?.src;
         const eventType = event?.type;
         const error = new Error();
         error.message = `Loading script failed.\nMissing: ${realSrc}\nEvent type: ${eventType}`;

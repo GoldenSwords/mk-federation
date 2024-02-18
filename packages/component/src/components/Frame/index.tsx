@@ -1,6 +1,8 @@
 import { FC, PropsWithChildren, useMemo } from 'react';
 import { Outlet, useNavigate } from 'react-router-dom';
 
+import img from '../../assets/react.svg'
+
 export const Frame: FC<PropsWithChildren> = () => {
   const nav = useNavigate();
   const tab = useMemo(
@@ -16,6 +18,7 @@ export const Frame: FC<PropsWithChildren> = () => {
         {tab.map(({ label, to }, index) => (
           <button key={index} onClick={() => nav(to)}>
             {label}
+            <img src={img} width={12}/>
           </button>
         ))}
       </div>

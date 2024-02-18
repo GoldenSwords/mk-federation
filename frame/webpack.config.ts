@@ -18,7 +18,7 @@ module.exports = config({
       exposes: { './Route': './src/Route' },
     }),
   ],
-  output: { path: path.resolve(__dirname, `../dist/frame/${v.version}`) },
+  output: { path: path.resolve(__dirname, `../dist`) },
   devServer: {
     port: 8080,
     hot: true,

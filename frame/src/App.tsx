@@ -9,20 +9,30 @@ function App() {
 
   useEffect(() => {
     setRoutes([
-      // {
-      //   path: '',
-      //   scope: 'component',
-      //   module: './Button',
-      //   subModule: 'Button',
-      //   url: 'http://localhost:4001/remoteEntry.js',
-      // },
-      {
-        path: '',
-        scope: 'component',
-        module: './Button',
-        subModule: 'Button',
-        url: 'http://localhost/modules/0.0.0/component/remoteEntry.js',
-      },
+        {
+          path: '/app',
+          scope: 'component',
+          module: './Frame',
+          subModule: 'Frame',
+          url: 'http://localhost/modules/0.0.0/component/remoteEntry.js',
+          children: [
+            {
+              path: 'button',
+              scope: 'component',
+              module: './Switch',
+              subModule: 'Switch',
+              url: 'http://localhost/modules/0.0.0/component/remoteEntry.js',
+            },
+            {
+              path: 'test',
+              scope: 'component',
+              module: './Test',
+              subModule: 'Test',
+              url: 'http://localhost/modules/0.0.0/component/remoteEntry.js',
+            },
+          ],
+        },
+        { path: '', to: 'app' },
     ]);
   }, []);
 
