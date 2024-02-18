@@ -1,0 +1,10 @@
+{
+  "name": "@mk/frame",
+  "private": true,
+  "version": "0.0.0",
+  "scripts": {
+    "dev": "webpack-cli server --config webpack.config.ts",
+    "build": "webpack-cli --config webpack.config.ts"
+  },
+  "dependencies": {}
+}
