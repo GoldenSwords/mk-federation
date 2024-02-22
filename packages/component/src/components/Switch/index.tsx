@@ -2,16 +2,25 @@ import { CSSProperties, FC, ReactNode, useEffect, useMemo, useState } from 'reac
 
 import classnames from 'classnames';
 
-import {
-  FactoryPayload,
-  MantineTheme,
-  PartialVarsResolver,
-  TransformVars,
-  getThemeColor,
-  useStyles,
-} from '@mantine/core';
+import { Box, FactoryPayload, PartialVarsResolver, useStyles } from '@mantine/core';
 
 import './index.scss';
+
+interface IVarsStyle {
+  '--m3-switch-bg': string;
+  '--m3-switch-hover-bg': string;
+  '--m3-switch-active-bg': string;
+  '--m3-switch-thumb-bg': string;
+  '--m3-switch-thumb-hover-bg': string;
+  '--m3-switch-thumb-active-bg': string;
+  '--m3-switch-label-color': string;
+  '--m3-switch-size': string;
+  '--m3-switch-thumb-margin': string;
+  '--m3-switch-label-margin': string;
+  '--m3-switch-disabled-opacity': string;
+}
+
+type ISwitchStyleProps = CSSProperties & Partial<IVarsStyle>;
 
 export interface ISwitchProps {
   label: ReactNode;
@@ -19,42 +28,16 @@ export interface ISwitchProps {
   value: boolean;
   className: string;
   onChange(val: boolean): void;
-  style: CSSProperties;
+  style: ISwitchStyleProps;
   vars: PartialVarsResolver<IStyle>;
-}
-
-interface IVars {
-  root:
-    | '--m3-switch-bg'
-    | '--m3-switch-hover-bg'
-    | '--m3-switch-active-bg'
-    | '-m3-switch-thumb-bg'
-    | '--m3-switch-thumb-hover-bg'
-    | '--m3-switch-thumb-active-bg'
-    | '--m3-switch-label-color'
-    | '--m3-switch-size'
-    | '--m3-switch-thumb-margin'
-    | '--m3-switch-label-margin'
-    | '--m3-switch-disabled-opacity';
 }
 
 interface IStyle extends FactoryPayload {
   stylesNames: string;
-  vars: IVars;
 }
 
-// const varsResolver = (
-//   theme: MantineTheme,
-//   props: FactoryPayload['props'],
-//   ctx: FactoryPayload['ctx'],
-// ): TransformVars<FactoryPayload['vars']> => {
-//   return {
-//     root: props.vars?.(theme, props, ctx) ?? {},
-//   };
-// };
-
 export const Switch: FC<Partial<ISwitchProps>> = (props) => {
-  const { label, disabled, className, value, style, vars, onChange } = props;
+  const { label, disabled, className, value, style, onChange } = props;
   const [active, setActive] = useState(value);
 
   const id = useMemo(() => `id_${Math.round(Math.random() * 1e11).toString(32)}`, []);
@@ -64,15 +47,13 @@ export const Switch: FC<Partial<ISwitchProps>> = (props) => {
   const getStyle = useStyles<IStyle>({
     name: 'switch',
     props,
-    vars,
-    // varsResolver,
     classes: {},
     className,
     style,
   });
 
   return (
-    <label htmlFor={id} {...getStyle('root')}>
+    <Box component="label" htmlFor={id} {...getStyle('root')} aria-hidden>
       <input
         id={id}
         checked={active}
@@ -81,12 +62,10 @@ export const Switch: FC<Partial<ISwitchProps>> = (props) => {
         onChange={({ target: { checked } }) => (onChange ?? setActive)(checked)}
         {...getStyle('input')}
       />
-      <div>
-        <div className={classnames({ active })}>
-          <div className={classnames({ active })} />
-        </div>
-        {!!label && <span>{label}</span>}
-      </div>
-    </label>
+      <Box component="div">
+        <Box component="div" className={classnames({ active })} />
+        {!!label && <Box component="span">{label}</Box>}
+      </Box>
+    </Box>
   );
 };
