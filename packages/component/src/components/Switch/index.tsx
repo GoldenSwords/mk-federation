@@ -45,7 +45,7 @@ export const Switch: FC<Partial<ISwitchProps>> = (props) => {
   useEffect(() => setActive(value), [value]);
 
   const getStyle = useStyles<IStyle>({
-    name: 'switch',
+    name: 'switch s',
     props,
     classes: {},
     className,
